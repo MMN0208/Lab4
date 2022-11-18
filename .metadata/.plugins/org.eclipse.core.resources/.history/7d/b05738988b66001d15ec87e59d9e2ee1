@@ -1,0 +1,38 @@
+/*
+ * sched.c
+ *
+ *  Created on: Nov 17, 2022
+ *      Author: ADMIN
+ */
+
+
+#include "sched.h"
+
+void SCH_Init(void) {
+	SCH_tasks_G.size = 0;
+}
+
+uint8_t SCH_Add_Task(void (* pFunction)(void), uint32_t DELAY, uint32_t PERIOD) {
+	TaskNode *node = (TaskNode *)malloc(sizeof(TaskNode));
+	node->task.pTask = pFunction;
+	node->task.Delay = DELAY;
+	node->task.Period = PERIOD;
+	node->task.RunMe = 0;
+	node->task.Task_ID = SCH_tasks_G.size;
+
+	if(!SCH_tasks_G.head) {
+		node->next = NULL;
+		SCH_tasks_G.head = node;
+	}
+	else {
+		node->next = SCH_tasks_G.head;
+		SCH_tasks_G.head = node;
+	}
+
+	SCH_tasks_G.size++;
+}
+
+void SCH_Delete_Task(uint8_t TASK_ID) {
+	if(TASK_ID >= SCH_tasks_G.size) return;
+	TaskNode *current
+}

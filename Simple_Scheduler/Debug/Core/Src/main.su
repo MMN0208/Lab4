@@ -1,0 +1,9 @@
+../Core/Src/main.c:61:6:toggleRedLed	8	static
+../Core/Src/main.c:65:6:toggleYelLed	8	static
+../Core/Src/main.c:69:6:toggleGrnLed	8	static
+../Core/Src/main.c:73:6:toggleBluLed	8	static
+../Core/Src/main.c:77:6:toggleWhtLed	8	static
+../Core/Src/main.c:86:5:main	8	static
+../Core/Src/main.c:137:6:SystemClock_Config	72	static
+../Core/Src/main.c:170:6:HAL_TIM_PeriodElapsedCallback	16	static
+../Core/Src/main.c:183:6:Error_Handler	4	static,ignoring_inline_asm
