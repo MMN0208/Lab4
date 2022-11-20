@@ -14,6 +14,7 @@
 
 typedef struct {
 	TaskNode * head;
+	TaskNode * cur;
 
 	uint32_t size;
 } TaskSLL;

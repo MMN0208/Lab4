@@ -22,8 +22,6 @@ typedef struct {
 
 	// Incremented (by scheduler) when task i s due to execute
 	uint8_t RunMe;
-
-	uint32_t Task_ID;
 } Task;
 
 typedef struct TaskNode{
