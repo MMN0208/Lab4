@@ -66,8 +66,8 @@ all: main-build
 main-build: Simple_Scheduler.elf secondary-outputs
 
 # Tool invocations
-Simple_Scheduler.elf Simple_Scheduler.map: $(OBJS) $(USER_OBJS) /Users/nhatmai/Documents/Semester\ 221/Microcontroller\ -\ Microprocessor/Lab4/Simple_Scheduler/STM32F103C6UX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Simple_Scheduler.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/Users/nhatmai/Documents/Semester 221/Microcontroller - Microprocessor/Lab4/Simple_Scheduler/STM32F103C6UX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Simple_Scheduler.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Simple_Scheduler.elf Simple_Scheduler.map: $(OBJS) $(USER_OBJS) C:\Users\ADMIN\Documents\MCU\Lab4\Simple_Scheduler\STM32F103C6UX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Simple_Scheduler.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\ADMIN\Documents\MCU\Lab4\Simple_Scheduler\STM32F103C6UX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Simple_Scheduler.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

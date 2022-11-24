@@ -12,22 +12,20 @@ TaskSLL SCH_tasks_G;
 
 void SCH_Init(void) {
 	SCH_tasks_G.head = NULL;
-	SCH_tasks_G.cur = NULL;
 	SCH_tasks_G.size = 0;
 }
 
-uint8_t SCH_Add_Task(void (* pFunction)(void), uint32_t DELAY, uint32_t PERIOD) {
+uint32_t SCH_Add_Task(void (* pFunction)(void), uint32_t DELAY, uint32_t PERIOD) {
 	TaskNode *node = (TaskNode *)malloc(sizeof(TaskNode));
 	node->task.pTask = pFunction;
 	node->task.Delay = DELAY;
 	node->task.Period = PERIOD;
 	if(SYSTEM_DELAY > 0) {
 		node->task.Delay /= SYSTEM_DELAY;
-		node->task.Period /= SYSTEM_DELAY;
 	}
 	node->task.RunMe = 0;
 
-	uint8_t index = 0;
+	uint8_t Index = 0;
 	if(SCH_tasks_G.size == 0) {
 		node->next = SCH_tasks_G.head;
 		SCH_tasks_G.head = node;
@@ -35,82 +33,74 @@ uint8_t SCH_Add_Task(void (* pFunction)(void), uint32_t DELAY, uint32_t PERIOD) 
 	else {
 		TaskNode * cur = SCH_tasks_G.head;
 		TaskNode * prev = NULL;
-		while(cur && node->task.Delay > cur->task.Delay) {
+		while(cur != NULL && node->task.Delay > cur->task.Delay) {
 			node->task.Delay -= cur->task.Delay;
 			prev = cur;
 			cur = cur->next;
-			index++;
+			Index++;
 		}
-		node->next = cur;
-		prev->next = node;
-		if(cur) {
+		if(!prev) {
+			node->next = cur;
 			cur->task.Delay -= node->task.Delay;
+			SCH_tasks_G.head = node;
+		}
+		else {
+			prev->next = node;
+			node->next = cur;
+			if(cur) {
+				cur->task.Delay -= node->task.Delay;
+			}
 		}
 	}
 
 	SCH_tasks_G.size++;
 
-	return index;
+	return Index;
 }
 
-void SCH_Delete_Task(uint8_t POSITION) {
-	if(POSITION < 0 || POSITION >= SCH_tasks_G.size) return;
+void SCH_Delete_Task(uint32_t TASK_INDEX) {
+	if(TASK_INDEX < 0 || TASK_INDEX >= SCH_tasks_G.size) return;
 
-	TaskNode * cur = SCH_tasks_G.head;
+	TaskNode * temp = SCH_tasks_G.head;
 
-	if(POSITION == 0) {
-		SCH_tasks_G.head = SCH_tasks_G.head->next;
-		free(cur);
+	if(TASK_INDEX == 0) {
+		SCH_tasks_G.head = temp->next;
+		SCH_tasks_G.head->task.Delay += temp->task.Delay;
 	}
 	else {
-		uint8_t index = 0;
-		while(index < POSITION) {
+		uint32_t Index = 0;
+		TaskNode * cur = SCH_tasks_G.head;
+		while(Index < TASK_INDEX - 1) {
 			cur = cur->next;
-			index += 1;
+			Index++;
 		}
-		TaskNode * temp = cur->next;
+		temp = cur->next;
 		cur->next = temp->next;
-		free(temp);
+		cur->next->task.Delay += temp->task.Delay;
 	}
+
+	free(temp);
+	temp = NULL;
 	SCH_tasks_G.size--;
 }
 
 void SCH_Dispatch_Tasks(void) {
-	TaskNode * cur = SCH_tasks_G.head;
-	uint8_t index = 0;
-	uint8_t remove_task = 0;
-	while(cur) {
-		if(cur->task.RunMe > 0) {
-			(*(cur->task.pTask))();
-			cur->task.RunMe--;
-			remove_task = 1;
+	if(SCH_tasks_G.head->task.RunMe == 1) {
+		(*SCH_tasks_G.head->task.pTask)();
 
-			if(cur->task.Period > 0) {
-				SCH_Add_Task(cur->task.pTask, cur->task.Delay, cur->task.Period);
-			}
+		if(SCH_tasks_G.head->task.Period > 0) {
+			SCH_Add_Task(SCH_tasks_G.head->task.pTask, SCH_tasks_G.head->task.Period, SCH_tasks_G.head->task.Period);
 		}
-		cur = cur->next;
-		if(remove_task) {
-			SCH_Delete_Task(index);
-		}
-		index += 1;
+
+		SCH_Delete_Task(0);
 	}
 }
 
 void SCH_Update(void) {
-	if(!SCH_tasks_G.cur) {
-		SCH_tasks_G.cur = SCH_tasks_G.head;
-	}
-	if(SCH_tasks_G.cur->task.Delay == 0) {
-		SCH_tasks_G.cur->task.RunMe += 1;
-
-		if(SCH_tasks_G.cur->task.Period > 0) {
-			SCH_tasks_G.cur->task.Delay = SCH_tasks_G.cur->task.Period;
-		}
-
-		SCH_tasks_G.cur = SCH_tasks_G.cur->next;
+	if(SCH_tasks_G.head->task.Delay == 0) {
+		SCH_tasks_G.head->task.RunMe = 1;
 	}
 	else {
-		SCH_tasks_G.cur->task.Delay--;
+		SCH_tasks_G.head->task.Delay--;
 	}
 }

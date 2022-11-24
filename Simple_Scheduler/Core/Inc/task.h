@@ -1,7 +1,7 @@
 /*
  * task.h
  *
- *  Created on: Nov 17, 2022
+ *  Created on: Nov 24, 2022
  *      Author: ADMIN
  */
 
@@ -29,5 +29,11 @@ typedef struct TaskNode{
 
 	struct TaskNode * next;
 } TaskNode;
+
+typedef struct {
+	TaskNode * head;
+
+	uint32_t size;
+} TaskSLL;
 
 #endif /* INC_TASK_H_ */

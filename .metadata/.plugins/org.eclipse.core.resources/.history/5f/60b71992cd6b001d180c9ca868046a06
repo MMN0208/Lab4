@@ -1,0 +1,104 @@
+/*
+ * sched.c
+ *
+ *  Created on: Nov 17, 2022
+ *      Author: ADMIN
+ */
+
+
+#include "sched.h"
+
+TaskSLL SCH_tasks_G;
+
+void SCH_Init(void) {
+	SCH_tasks_G.head = NULL;
+	SCH_tasks_G.size = 0;
+}
+
+uint32_t SCH_Add_Task(void (* pFunction)(void), uint32_t DELAY, uint32_t PERIOD) {
+	TaskNode *node = (TaskNode *)malloc(sizeof(TaskNode));
+	node->task.pTask = pFunction;
+	node->task.Delay = DELAY;
+	node->task.Period = PERIOD;
+	if(SYSTEM_DELAY > 0) {
+		node->task.Delay /= SYSTEM_DELAY;
+	}
+	node->task.RunMe = 0;
+
+	uint8_t Index = 0;
+	if(SCH_tasks_G.size == 0) {
+		node->next = SCH_tasks_G.head;
+		SCH_tasks_G.head = node;
+	}
+	else {
+		TaskNode * cur = SCH_tasks_G.head;
+		TaskNode * prev = NULL;
+		while(cur != NULL && node->task.Delay > cur->task.Delay) {
+			node->task.Delay -= cur->task.Delay;
+			prev = cur;
+			cur = cur->next;
+			Index++;
+		}
+		if(!prev) {
+			node->next = cur;
+			cur->task.Delay -= node->task.Delay;
+			SCH_tasks_G.head = node;
+		}
+		else {
+			prev->next = node;
+			node->next = cur;
+			if(cur) {
+				cur->task.Delay -= node->task.Delay;
+			}
+		}
+	}
+
+	SCH_tasks_G.size++;
+
+	return Index;
+}
+
+void SCH_Delete_Task(uint32_t TASK_INDEX) {
+	if(TASK_INDEX < 0 || TASK_INDEX >= SCH_tasks_G.size) return;
+
+	TaskNode * temp = SCH_tasks_G.head;
+
+	if(TASK_INDEX == 0) {
+		SCH_tasks_G.head = temp->next;
+	}
+	else {
+		uint32_t Index = 0;
+		TaskNode * cur = SCH_tasks_G.head;
+		while(Index < TASK_INDEX - 1) {
+			cur = cur->next;
+			Index++;
+		}
+		temp = cur->next;
+		cur->next = temp->next;
+	}
+
+	free(temp);
+	temp = NULL;
+	SCH_tasks_G.size--;
+}
+
+void SCH_Dispatch_Tasks(void) {
+	if(SCH_tasks_G.head->task.RunMe > 0) {
+		(*SCH_tasks_G.head->task.pTask)();
+
+		if(SCH_tasks_G.head->task.Period > 0) {
+			SCH_Add_Task(SCH_tasks_G.head->task.pTask, SCH_tasks_G.head->task.Period, SCH_tasks_G.head->task.Period);
+		}
+
+		SCH_Delete_Task(0);
+	}
+}
+
+void SCH_Update(void) {
+	if(SCH_tasks_G.head->task.Delay == 0) {
+		SCH_tasks_G.head->task.RunMe += 1;
+	}
+	else {
+		SCH_tasks_G.head->task.Delay--;
+	}
+}

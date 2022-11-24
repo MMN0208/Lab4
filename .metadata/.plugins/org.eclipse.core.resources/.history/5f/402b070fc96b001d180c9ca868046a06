@@ -1,0 +1,99 @@
+/*
+ * sched.c
+ *
+ *  Created on: Nov 17, 2022
+ *      Author: ADMIN
+ */
+
+
+#include "sched.h"
+
+TaskSLL SCH_tasks_G;
+
+void SCH_Init(void) {
+	SCH_tasks_G.head = NULL;
+	SCH_tasks_G.size = 0;
+}
+
+uint32_t SCH_Add_Task(void (* pFunction)(void), uint32_t DELAY, uint32_t PERIOD) {
+	TaskNode *node = (TaskNode *)malloc(sizeof(TaskNode));
+	node->task.pTask = pFunction;
+	node->task.Delay = DELAY;
+	node->task.Period = PERIOD;
+	if(SYSTEM_DELAY > 0) {
+		node->task.Delay /= SYSTEM_DELAY;
+	}
+	node->task.RunMe = 0;
+
+	uint8_t Index = 0;
+	if(SCH_tasks_G.size == 0) {
+		node->next = SCH_tasks_G.head;
+		SCH_tasks_G.head = node;
+	}
+	else {
+		TaskNode * cur = SCH_tasks_G.head;
+		TaskNode * prev = NULL;
+		while(cur != NULL && node->task.Delay > cur->task.Delay) {
+			node->task.Delay -= cur->task.Delay;
+			prev = cur;
+			cur = cur->next;
+			Index++;
+		}
+		if(!prev) {
+			node->next = cur;
+			cur->task.Delay -= node->task.Delay;
+			SCH_tasks_G.head = node;
+		}
+		else {
+			prev->next = node;
+			node->next = cur;
+			if(cur) {
+				cur->task.Delay -= node->task.Delay;
+			}
+		}
+	}
+
+	SCH_tasks_G.size++;
+
+	return index;
+}
+
+void SCH_Delete_Task(uint32_t TASK_INDEX) {
+	if(SCH_tasks_G[TASK_INDEX].pTask == 0) return;
+
+	for(uint32_t Temp = TASK_INDEX; Temp < Size; Temp++) {
+		SCH_tasks_G[Temp].pTask = SCH_tasks_G[Temp + 1].pTask;
+		SCH_tasks_G[Temp].Delay = SCH_tasks_G[Temp + 1].Delay;
+		SCH_tasks_G[Temp].Period = SCH_tasks_G[Temp + 1].Period;
+		SCH_tasks_G[Temp].RunMe = SCH_tasks_G[Temp + 1].RunMe;
+		SCH_tasks_G[Temp].TaskID = SCH_tasks_G[Temp + 1].TaskID - 1;
+	}
+
+	Size -= 1;
+}
+
+void SCH_Dispatch_Tasks(void) {
+	if(SCH_tasks_G[Head].RunMe > 0) {
+		(*SCH_tasks_G[Head].pTask)();
+
+		void (* pTask)(void);
+		pTask = SCH_tasks_G[Head].pTask;
+		uint32_t Period = SCH_tasks_G[Head].Period;
+
+		SCH_Delete_Task(Head);
+
+		if(Period > 0) {
+			SCH_Add_Task(pTask, Period, Period);
+		}
+
+	}
+}
+
+void SCH_Update(void) {
+	if(SCH_tasks_G[Head].Delay == 0) {
+		SCH_tasks_G[Head].RunMe += 1;
+	}
+	else {
+		SCH_tasks_G[Head].Delay--;
+	}
+}
