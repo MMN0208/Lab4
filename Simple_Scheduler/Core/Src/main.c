@@ -111,7 +111,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim2);
 
-  SCH_Add_Task(&toggleWhtLed, 40, 2500);
+  SCH_Add_Task(&toggleWhtLed, 5000, 0);
   SCH_Add_Task(&toggleRedLed, 0, 500);
   SCH_Add_Task(&toggleYelLed, 10, 1000);
   SCH_Add_Task(&toggleGrnLed, 20, 1500);

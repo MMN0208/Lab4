@@ -58,7 +58,25 @@ void toggleWhtLed(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void toggleRedLed(void) {
+	HAL_GPIO_TogglePin(RED_0_GPIO_Port, RED_0_Pin);
+}
 
+void toggleYelLed(void) {
+	HAL_GPIO_TogglePin(YEL_0_GPIO_Port, YEL_0_Pin);
+}
+
+void toggleGrnLed(void) {
+	HAL_GPIO_TogglePin(GRN_0_GPIO_Port, GRN_0_Pin);
+}
+
+void toggleBluLed(void) {
+	HAL_GPIO_TogglePin(BLU_0_GPIO_Port, BLU_0_Pin);
+}
+
+void toggleWhtLed(void) {
+	HAL_GPIO_TogglePin(WHT_0_GPIO_Port, WHT_0_Pin);
+}
 /* USER CODE END 0 */
 
 /**
@@ -92,6 +110,12 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim2);
+
+  SCH_Add_Task(&toggleWhtLed, 40, 2500);
+  SCH_Add_Task(&toggleRedLed, 0, 500);
+  SCH_Add_Task(&toggleYelLed, 10, 1000);
+  SCH_Add_Task(&toggleGrnLed, 20, 1500);
+  SCH_Add_Task(&toggleBluLed, 30, 2000);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -145,9 +169,6 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
-    /*
-     * Invoked every 10ms
-     */
 	SCH_Update();
 }
 /* USER CODE END 4 */

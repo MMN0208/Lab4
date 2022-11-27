@@ -259,9 +259,9 @@ int main(void)
  800022c:	4811      	ldr	r0, [pc, #68]	; (8000274 <main+0x60>)
  800022e:	f001 fa17 	bl	8001660 <HAL_TIM_Base_Start_IT>
 
-  SCH_Add_Task(&toggleWhtLed, 80, 2500);
- 8000232:	f640 12c4 	movw	r2, #2500	; 0x9c4
- 8000236:	2150      	movs	r1, #80	; 0x50
+  SCH_Add_Task(&toggleWhtLed, 5000, 0);
+ 8000232:	2200      	movs	r2, #0
+ 8000234:	f241 3188 	movw	r1, #5000	; 0x1388
  8000238:	480f      	ldr	r0, [pc, #60]	; (8000278 <main+0x64>)
  800023a:	f000 f87f 	bl	800033c <SCH_Add_Task>
   SCH_Add_Task(&toggleRedLed, 0, 500);
@@ -269,19 +269,19 @@ int main(void)
  8000242:	2100      	movs	r1, #0
  8000244:	480d      	ldr	r0, [pc, #52]	; (800027c <main+0x68>)
  8000246:	f000 f879 	bl	800033c <SCH_Add_Task>
-  SCH_Add_Task(&toggleYelLed, 20, 1000);
+  SCH_Add_Task(&toggleYelLed, 10, 1000);
  800024a:	f44f 727a 	mov.w	r2, #1000	; 0x3e8
- 800024e:	2114      	movs	r1, #20
+ 800024e:	210a      	movs	r1, #10
  8000250:	480b      	ldr	r0, [pc, #44]	; (8000280 <main+0x6c>)
  8000252:	f000 f873 	bl	800033c <SCH_Add_Task>
-  SCH_Add_Task(&toggleGrnLed, 40, 1500);
+  SCH_Add_Task(&toggleGrnLed, 20, 1500);
  8000256:	f240 52dc 	movw	r2, #1500	; 0x5dc
- 800025a:	2128      	movs	r1, #40	; 0x28
+ 800025a:	2114      	movs	r1, #20
  800025c:	4809      	ldr	r0, [pc, #36]	; (8000284 <main+0x70>)
  800025e:	f000 f86d 	bl	800033c <SCH_Add_Task>
-  SCH_Add_Task(&toggleBluLed, 60, 2000);
+  SCH_Add_Task(&toggleBluLed, 30, 2000);
  8000262:	f44f 62fa 	mov.w	r2, #2000	; 0x7d0
- 8000266:	213c      	movs	r1, #60	; 0x3c
+ 8000266:	211e      	movs	r1, #30
  8000268:	4807      	ldr	r0, [pc, #28]	; (8000288 <main+0x74>)
  800026a:	f000 f867 	bl	800033c <SCH_Add_Task>
 
